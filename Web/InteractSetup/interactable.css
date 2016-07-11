@@ -10,18 +10,22 @@
     background-color:white;
 }
 #spawnButton {
-    position: absolute;
+    position: fixed;
 }
 #spawnLabel {
-    position: absolute;
+    position: fixed;
     top: 50px;
 }
 #spawnVariable {
-    position: absolute;
-    top: 70px;
+    position: fixed;
+    top: 90px;
+}
+#spawnImage{
+    position: fixed;
+    top: 130px;
 }
 #saveButton {
-    position: absolute;
+    position: fixed;
     top: 200px;
 }
 .resourceDiv {
@@ -29,12 +33,19 @@
     width:150px;
     height:20px;
     background-color:white;
-    border-color:blue;
-    border-style:dotted;
+    outline-color:blue;
+    outline-style:dotted;
 }
 #label {
     width: 100px;
     height: 100px;
+}
+.image {
+    position:absolute;
+    background-color:none;
+    outline:1px dashed black;
+    width:18px;
+    height:18px;
 }
 .block {
     /*position:absolute;

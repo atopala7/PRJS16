@@ -4,10 +4,12 @@
 var resourceCounter = 0;
 var labelCounter = 0;
 var variableCounter = 0;
+var imageCounter = 0;
 
 var resourceArr = [];
 var labelArr = [];
 var variableArr = [];
+var imageArr = [];
 
 // Main resource management function. 
 // Opens up a dialog box for managing resource parameters as well as
@@ -33,6 +35,8 @@ function manageResource(resourceID, resourceDivID){
 
   // Get the value of the resource
   var resourceValue = document.getElementById(resourceID).textContent;
+  if (document.getElementById(resourceID).tagName.toLowerCase() == "img")
+	resourceValue = document.getElementById(resourceID).src;
 
   // Display a resource's ID.
   var id_label = document.createElement('label');
@@ -94,6 +98,43 @@ function setResource(resourceID){
       console.log('Changing a variable.');
       temp.setAttribute('resourceValue', $(newVal).val());
       $(temp).val($(newVal).val());
+      break;
+    case 'image':
+      console.log('Changing an image.');
+      temp.setAttribute('resourceValue', $(newVal).val());
+      // TODO: upload image instead of urls
+      $(temp).attr("src", $(newVal).val());
+      
+      // Load a new image object to get its dimensions
+      img = new Image();
+      img.src = $(newVal).val();
+      // img needs to load before we can access its dimensions
+      img.onload = function () {
+	var width = img.width;
+	var height = img.height;
+	// Change our original image's dimensions
+	$(temp).width(width);
+	$(temp).height(height);
+	img.remove();
+
+	// We have to ensure the image size doesn't exceed the container's
+	var sheet = document.getElementById('sheetContainer');
+	var maxWidth = $(sheet).width();
+	var maxHeight= $(sheet).height();
+	// We'll need to reduce the image's size while maintaing aspect ratio
+	var ratio = Math.min(maxWidth / $(temp).width(), maxHeight / $(temp).height());
+	if ($(temp).width() > maxWidth) {
+		$(temp).css("width", $(temp).width() * ratio);
+		$(temp).css("height", $(temp).height() * ratio);
+	}
+	if ($(temp).height() > maxHeight) {
+		$(temp).css("width", $(temp).width() * ratio);
+		$(temp).css("height", $(temp).height() * ratio);
+	}
+
+	temp.parentElement.style.width = temp.width + "px"; 
+	temp.parentElement.style.height = temp.height + "px"; 
+     }
       break;
     default:
       console.log('Nothing changed due to unknown resource type.');
@@ -205,6 +246,45 @@ function spawnVariable(){
   resourceDiv.appendChild(newVariable);
 
   variableCounter++;
+  resourceCounter++;
+  document.getElementById('sheetContainer').appendChild(resourceDiv);
+}
+
+function spawnImage() {
+  var newImage= document.createElement('img');
+    //newImage.className = 'image';
+  newImage.id = 'image' + imageCounter;
+  newImage.placeholder = 'http://orig09.deviantart.net/fe9c/f/2014/231/5/5/dark_souls_sif_by_zedotagger-d7vvhqh.gif';
+  newImage.src = newImage.placeholder;
+/*
+var img = new Image();
+img.src = newImage.placeholder;
+/*
+img.onload = function() {
+	var height = img.height;
+        var width = img.width;
+          newImage.style.height = height + "px";
+          newImage.style.width = width + "px";
+          //event.target.innerHTML = "<img src='" + newText + "' />";
+  newImage.setAttribute('resourceType', "image");
+  newImage.setAttribute('resourceValue', 0);
+  imageArr.push(newImage);
+*/
+  //newImage.style.height = newImage.height + "px";
+  //newImage.style.width = newImage.width + "px";
+          //event.target.innerHTML = "<img src='" + newText + "' />";
+  newImage.setAttribute('resourceType', "image");
+  newImage.setAttribute('resourceValue', 0);
+  imageArr.push(newImage);
+
+  var resourceDiv = createResourceDiv();
+  resourceDiv.addEventListener('dblclick' , function(){ manageResource(newImage.id, resourceDiv.id) });
+  resourceDiv.style.height = newImage.height + 'px';
+  resourceDiv.style.width = newImage.width + 'px';
+  resourceDiv.style.backgroundColor = 'transparent';
+  resourceDiv.appendChild(newImage);
+
+  imageCounter++;
   resourceCounter++;
   document.getElementById('sheetContainer').appendChild(resourceDiv);
 }
